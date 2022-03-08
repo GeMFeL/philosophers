@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:49:19 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 12:44:12 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/08 20:52:49 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <time.h>
 
 # define ARG_ERROR "argument not a number"
+# define ARG_VALUE_ERROR "Arguments should be non negative or zero"
 # define MALLOC_ERROR "malloc() error"
 
 typedef	struct s_data

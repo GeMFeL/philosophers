@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:18:29 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 12:45:03 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/08 21:56:54 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	exact_sleep_in_msec(int msec)
 	start = get_curent_time_in_msec();
 	while (get_curent_time_in_msec() - start < msec)
 	{
-		usleep(200);
+		usleep(250);
 	}
 }
 
@@ -39,9 +39,17 @@ static void	initialising_data_int_with_atoi(t_data *data, char *argv[])
 	data->time_to_die = custom_atoi(argv[1]);
 	data->time_to_eat = custom_atoi(argv[2]);
 	data->time_to_sleep = custom_atoi(argv[3]);
+	if (data->num_of_philo <= 0 || data->time_to_die <= 0)
+		put_error_then_exit(ARG_VALUE_ERROR);
+	if (data->time_to_eat <= 0 || data->time_to_sleep <= 0)
+		put_error_then_exit(ARG_VALUE_ERROR);
 	data->meal_count = -1;
 	if (argv[4])
+	{
 		data->meal_count = custom_atoi(argv[4]);
+		if (data->meal_count <= 0)
+			put_error_then_exit(ARG_VALUE_ERROR);
+	}
 }
 
 t_data	**initialising_data(char	*argv[])
