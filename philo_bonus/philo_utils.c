@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:18:29 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 21:56:54 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 17:24:42 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,29 +52,20 @@ static void	initialising_data_int_with_atoi(t_data *data, char *argv[])
 	}
 }
 
-t_data	**initialising_data(char	*argv[])
+t_data	*initialising_data(char	*argv[])
 {
 	t_data	*data;
-	t_data	**data_args;
-	int		i;
 
 	data = malloc(sizeof(t_data));
 	if (! data)
 		perror_then_exit(MALLOC_ERROR);
 	initialising_data_int_with_atoi(data, argv);
-	data->mutexs = malloc(sizeof(pthread_mutex_t) * data->num_of_philo);
-	data->last_meal = malloc(sizeof(time_t) * data->num_of_philo);
-	data_args = malloc(sizeof(t_data *) * data->num_of_philo);
-	if (! data->mutexs || ! data->last_meal || ! data_args)
+	data->pids = malloc(sizeof(pid_t) * data->num_of_philo);
+	if (! data->pids)
 		perror_then_exit(MALLOC_ERROR);
-	data->initial_value_of_data_args = (void *)data_args;
-	i = 0;
-	while (i < data->num_of_philo)
-	{
-		data->last_meal[i] = 0;
-		pthread_mutex_init(data->mutexs + i, NULL);
-		data_args[i] = data;
-		i++;
-	}
-	return (data_args);
+	sem_unlink(SEM_FORKS_NAME);
+	data->forks = sem_open(SEM_FORKS_NAME, O_CREAT, 0666, data->num_of_philo);
+	if (data->forks == SEM_FAILED)
+		perror_then_exit(SEM_FORKS_NAME);
+	return (data);
 }

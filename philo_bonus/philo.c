@@ -6,86 +6,39 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:50:11 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 22:12:05 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 19:09:19 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	check_someone_die__time_to_die(t_data *data)
-{
-	int		i;
-	time_t	curent_time;
-	int		all_still_alive;
-
-	all_still_alive = 1;
-	usleep(1000);
-	while (all_still_alive)
-	{
-		curent_time = get_curent_time_in_msec() - data->date_of_birth;
-		i = 0;
-		while (i < data->num_of_philo)
-		{
-			if (curent_time - data->last_meal[i] > data->time_to_die)
-			{
-				printf("%7ld: %d died\n", curent_time, i + 1);
-				all_still_alive = 0;
-			}
-			i++;
-		}
-	}
-}
-
-static void	check_someone_die__meal_count(t_data *data)
-{
-	int	i;
-	int	all_still_alive;
-
-	all_still_alive = 1;
-	usleep(1000);
-	while (all_still_alive)
-	{
-		i = 0;
-		while (i < data->num_of_philo)
-		{
-			if (data->last_meal[i] < data->meal_count)
-			{
-				all_still_alive = 1;
-				break ;
-			}
-			else
-			{
-				all_still_alive = 0;	
-			}
-			i++;
-		}
-	}
-}
-
 int main(int argc, char **argv)
 {
-	t_data		**data_args;
-	t_data		*data;
-	pthread_t	*threads;
-	int			i;
+	t_data	*data;
+	int		i;
 
 	if (argc != 5 && argc != 6)
 		return 0;
-	data_args = initialising_data(argv + 1);
-	data = data_args[0];
-	threads = (pthread_t *)malloc(sizeof(pthread_t) * data->num_of_philo);
-	if (! threads)
-		perror_then_exit(MALLOC_ERROR);
+	data = initialising_data(argv + 1);
 	i = 0;
-	data->date_of_birth = get_curent_time_in_msec();
 	while (i < data->num_of_philo)
 	{
-		pthread_create(threads + i, NULL, philosopher, (data_args + i));
+		data->pids[i] = fork();
+		if (data->pids[i] < 0)
+			perror_then_exit(FORK_ERROR);
+		if (! data->pids[i])
+			philosopher(data, i);
 		i++;
 	}
-	if (data->meal_count < 0)
-		check_someone_die__time_to_die(data);
-	else
-		check_someone_die__meal_count(data);
+
+	i = 0;
+	while (i < data->num_of_philo)
+	{
+		waitpid(data->pids[i], NULL, 0);
+		i++;
+	}
+	sem_unlink(SEM_FORKS_NAME);
+	free(data->pids);
+	free(data);
 	return 0;
 }

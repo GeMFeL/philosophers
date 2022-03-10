@@ -6,49 +6,104 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 17:07:05 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 22:02:48 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 19:31:57 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	philosopher_routine(t_data *data, pthread_mutex_t *right, \
-								pthread_mutex_t *left, int id)
+static void	kill_all_child_procs__philosophers_(t_data *data, int exclude)
 {
-	time_t	eat_time;
+	int	i;
 
-	usleep(id * 50);
-	while (1)
+	i = 0;
+	while (i < data->num_of_philo)
 	{
-		pthread_mutex_lock(right);
-		printf("%7ld: %d has taken a fork\n", get_curent_time_in_msec() - data->date_of_birth, id + 1);
-		pthread_mutex_lock(left);
-		eat_time = get_curent_time_in_msec() - data->date_of_birth;
-		if (data->meal_count < 0)
-			data->last_meal[id] = eat_time;
-		else
-			data->last_meal[id] += 1;
-		printf("%7ld: %d is eating\n", eat_time, id + 1);
-		exact_sleep_in_msec(data->time_to_eat);
-		pthread_mutex_unlock(right);
-		pthread_mutex_unlock(left);
-		printf("%7ld: %d is sleeping\n", get_curent_time_in_msec() - data->date_of_birth, id + 1);
-		exact_sleep_in_msec(data->time_to_sleep);
-		printf("%7ld: %d is thinking\n", get_curent_time_in_msec() - data->date_of_birth, id + 1);
+		if (i != exclude)
+			kill(data->pids[i], SIGKILL);
+		i++;
 	}
 }
 
-void	*philosopher(void *data_args)
+static void	*check_time_to_die(void *data)
 {
-	t_data			*data;
-	pthread_mutex_t	*right;
-	pthread_mutex_t	*left;
-	int				id;
+	t_philo_data	*philo_data;
+	time_t			curent_time;
 
-	data = *(t_data **)data_args;
-	id = (data_args - data->initial_value_of_data_args) / sizeof(void *);
-	right = data->mutexs + id;
-	left = data->mutexs + ((id + 1) % data->num_of_philo);
-	philosopher_routine(data, right, left, id);
+	philo_data = (t_philo_data *)data;
+	usleep(1000);
+	while (1)
+	{
+		curent_time = get_curent_time_in_msec();
+		if (curent_time - philo_data->last_meal >= philo_data->data->time_to_die)
+		{
+			printf("%7ld: %d died\n", curent_time, philo_data->id + 1);
+			kill_all_child_procs__philosophers_(philo_data->data, philo_data->id);
+			exit (0);
+		}
+		usleep(500);
+	}
+	return (NULL);
+}
+
+static void	*check_meal_count(void *data)
+{
+	t_philo_data	*philo_data;
+
+	philo_data = (t_philo_data *)data;
+	usleep(1000);
+	while (1)
+	{
+		if (philo_data->last_meal < philo_data->data->meal_count)
+			exit (0);
+		usleep(500);
+	}
 	return NULL;
+}
+
+static void	philosopher__start_eating_(t_philo_data *philo_data)
+{
+	time_t	eat_time;
+
+	eat_time = get_curent_time_in_msec();
+	if (philo_data->data->meal_count < 0)
+		philo_data->last_meal = eat_time;
+	else
+		philo_data->last_meal += 1;
+	printf("%7ld: %d is eating\n", eat_time, philo_data->id + 1);
+	exact_sleep_in_msec(philo_data->data->time_to_eat);
+	sem_post(philo_data->data->forks);
+	sem_post(philo_data->data->forks);
+}
+
+void	philosopher(t_data *data, int id)
+{
+	t_philo_data	*philo_data;
+	pthread_t		thread_checker[1];
+	int 		i = 11;
+
+	philo_data = malloc(sizeof(t_philo_data));
+	philo_data->id = id;
+	philo_data->data = data;
+	if (data->meal_count < 0)
+	{
+		philo_data->last_meal = get_curent_time_in_msec();
+		pthread_create(thread_checker, NULL, check_time_to_die, philo_data);
+	}
+	else
+	{
+		philo_data->last_meal = 0;
+		pthread_create(thread_checker, NULL, check_meal_count, &philo_data);
+	}
+	while (i--)
+	{
+		sem_wait(data->forks);
+		printf("%7ld: %d has taken a fork\n", get_curent_time_in_msec(), id + 1);
+		sem_wait(data->forks);
+		philosopher__start_eating_(philo_data);
+		printf("%7ld: %d is sleeping\n", get_curent_time_in_msec(), id + 1);
+		exact_sleep_in_msec(data->time_to_sleep);
+		printf("%7ld: %d is thinking\n", get_curent_time_in_msec(), id + 1);
+	}
+	exit (0);
 }
