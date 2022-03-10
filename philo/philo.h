@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:49:19 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 20:52:49 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 18:05:13 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,6 @@ int		custom_atoi(char *str);
 time_t	get_curent_time_in_msec(void);
 void	exact_sleep_in_msec(int msec);
 t_data	**initialising_data(char *argv[]);
-void	*philosopher(void *data_args);
+void	*philosopher(t_data **data_args);
 
 #endif

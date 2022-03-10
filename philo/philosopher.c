@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 17:07:05 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 22:02:48 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 18:06:04 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,15 @@ static void	philosopher_routine(t_data *data, pthread_mutex_t *right, \
 	}
 }
 
-void	*philosopher(void *data_args)
+void	*philosopher(t_data **data_args)
 {
 	t_data			*data;
 	pthread_mutex_t	*right;
 	pthread_mutex_t	*left;
 	int				id;
 
-	data = *(t_data **)data_args;
-	id = (data_args - data->initial_value_of_data_args) / sizeof(void *);
+	data = *data_args;
+	id = ((void *)data_args - data->initial_value_of_data_args) / sizeof(void *);
 	right = data->mutexs + id;
 	left = data->mutexs + ((id + 1) % data->num_of_philo);
 	philosopher_routine(data, right, left, id);
