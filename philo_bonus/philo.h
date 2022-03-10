@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:49:19 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/10 17:54:03 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/10 21:04:08 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef	struct s_data
 typedef struct s_philo_data
 {
 	int		id;
+	int		meal_count;
 	time_t	last_meal;
 	t_data	*data;
 }	t_philo_data;
