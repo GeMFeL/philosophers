@@ -6,29 +6,31 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 17:07:05 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/11 12:45:38 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 16:17:43 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	kill_all_child_procs__philosophers_(t_data *data, int my_id)
-{
-	pid_t	first_pid;
-	int		i;
+// static void	kill_all_child_procs__philosophers_(t_data *data, int my_id)
+// {
+// 	pid_t	first_pid;
+// 	int		i;
 
-	first_pid = data->pids[0];
-	i = 0;
-	while (i < data->num_of_philo)
-	{
-		if (i != my_id)
-		{
-			//printf("\nphilo %d have pid %d has killed\n\n", i + 1, data->pids[i]);
-			kill(first_pid + i, SIGKILL);
-		}
-		i++;
-	}
-}
+// 	first_pid = data->pids[0];
+// 	i = 0;
+// 	while (i < data->num_of_philo)
+// 	{
+// 		if (i != my_id)
+// 		{
+// 			printf("\n\nphilo %d have pid %d was killed\n\n", i, data->pids[i]);
+// 			kill(first_pid + i, SIGKILL);
+// 		}
+// 		else
+// 			printf("\n\nI am philo %d and my pid is %d\n\n", i, data->pids[i]);
+// 		i++;
+// 	}
+// }
 
 static void	*check_time_to_die(void *p_data)
 {
@@ -40,12 +42,12 @@ static void	*check_time_to_die(void *p_data)
 	while (1)
 	{
 		curent_time = get_curent_time_in_msec();
-		if (curent_time - philo_data->last_meal >= philo_data->data->time_to_die)
+		if (curent_time - philo_data->last_meal > philo_data->data->time_to_die)
 		{
 			philo_data->am_die = 1;
-			printf("%7ld: %d died\n", curent_time, philo_data->id + 1);
-			// kill(0, SIGKILL);
-			kill_all_child_procs__philosophers_(philo_data->data, philo_data->id);
+			printf("%ld: %d died\n", curent_time, philo_data->id + 1);
+			kill(0, SIGKILL);
+			// kill_all_child_procs__philosophers_(philo_data->data, philo_data->id);
 			exit (0);
 		}
 		usleep(1000);
@@ -68,12 +70,12 @@ static void	*check_meal_count(void *p_data)
 	return NULL;
 }
 
-static void	if_am_die_wait_until_exit(t_philo_data *philo_data)
-{
-	if (philo_data->am_die)
-		while (1)
-			exact_sleep_in_msec(10);
-}
+// static void	if_am_die_wait_until_exit(t_philo_data *philo_data)
+// {
+// 	if (philo_data->am_die)
+// 		while (1)
+// 			exact_sleep_in_msec(10);
+// }
 
 static void	philosopher__start_eating_(t_philo_data *philo_data)
 {
@@ -82,8 +84,7 @@ static void	philosopher__start_eating_(t_philo_data *philo_data)
 	eat_time = get_curent_time_in_msec();
 	if (philo_data->data->meal_count < 0)
 		philo_data->last_meal = eat_time;
-	if_am_die_wait_until_exit(philo_data);
-	printf("%7ld: %d is eating\n", eat_time, philo_data->id + 1);
+	printf("%ld: %d is eating\n", eat_time, philo_data->id + 1);
 	exact_sleep_in_msec(philo_data->data->time_to_eat);
 	sem_post(philo_data->data->forks);
 	sem_post(philo_data->data->forks);
@@ -109,15 +110,15 @@ void	philosopher(t_data *data, int id)
 	while (1)
 	{
 		sem_wait(data->forks);
-		if_am_die_wait_until_exit(philo_data);
-		printf("%7ld: %d has taken a fork\n", get_curent_time_in_msec(), id + 1);
+		// if_am_die_wait_until_exit(philo_data);
+		printf("%ld: %d has taken a fork\n", get_curent_time_in_msec(), id + 1);
 		sem_wait(data->forks);
 		philosopher__start_eating_(philo_data);
-		if_am_die_wait_until_exit(philo_data);
-		printf("%7ld: %d is sleeping\n", get_curent_time_in_msec(), id + 1);
+		// if_am_die_wait_until_exit(philo_data);
+		printf("%ld: %d is sleeping\n", get_curent_time_in_msec(), id + 1);
 		exact_sleep_in_msec(data->time_to_sleep);
-		if_am_die_wait_until_exit(philo_data);
-		printf("%7ld: %d is thinking\n", get_curent_time_in_msec(), id + 1);
+		// if_am_die_wait_until_exit(philo_data);
+		printf("%ld: %d is thinking\n", get_curent_time_in_msec(), id + 1);
 	}
 	exit (0);
 }

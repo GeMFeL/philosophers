@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 17:07:05 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/11 14:10:00 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 15:31:45 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,20 @@ static void	philosopher_routine(t_data *data, pthread_mutex_t *right, \
 	while (1)
 	{
 		pthread_mutex_lock(right);
-		printf("%7ld: %d has taken a fork\n", get_curent_time_in_msec(), id + 1);
+		printf("%ld: %d has taken a fork\n", get_curent_time_in_msec(), id + 1);
 		pthread_mutex_lock(left);
 		eat_time = get_curent_time_in_msec();
 		if (data->meal_count < 0)
 			data->last_meal[id] = eat_time;
-		printf("%7ld: %d is eating\n", eat_time, id + 1);
+		printf("%ld: %d is eating\n", eat_time, id + 1);
 		exact_sleep_in_msec(data->time_to_eat);
 		pthread_mutex_unlock(right);
 		pthread_mutex_unlock(left);
 		if (data->meal_count > 0)
 			data->last_meal[id] += 1;
-		printf("%7ld: %d is sleeping\n", get_curent_time_in_msec(), id + 1);
+		printf("%ld: %d is sleeping\n", get_curent_time_in_msec(), id + 1);
 		exact_sleep_in_msec(data->time_to_sleep);
-		printf("%7ld: %d is thinking\n", get_curent_time_in_msec(), id + 1);
+		printf("%ld: %d is thinking\n", get_curent_time_in_msec(), id + 1);
 	}
 }
 

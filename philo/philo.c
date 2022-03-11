@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:50:11 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/11 14:05:59 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 15:31:57 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	check_someone_die__time_to_die(t_data *data)
 		{
 			if (curent_time - data->last_meal[i] > data->time_to_die)
 			{
-				printf("%7ld: %d died\n", curent_time, i + 1);
+				printf("%ld: %d died\n", curent_time, i + 1);
 				all_still_alive = 0;
 			}
 			i++;
