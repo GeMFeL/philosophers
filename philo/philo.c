@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:50:11 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 21:42:52 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 14:05:59 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	check_someone_die__time_to_die(t_data *data)
 	usleep(1000);
 	while (all_still_alive)
 	{
-		curent_time = get_curent_time_in_msec() - data->date_of_birth;
+		curent_time = get_curent_time_in_msec();
 		i = 0;
 		while (i < data->num_of_philo)
 		{
@@ -77,16 +77,24 @@ int main(int argc, char **argv)
 	if (! threads)
 		perror_then_exit(MALLOC_ERROR);
 	i = 0;
-	data->date_of_birth = get_curent_time_in_msec();
 	while (i < data->num_of_philo)
 	{
-		pthread_create(threads + i, NULL, philosopher, (data_args + i));
-		// usleep(100);
+		if (data->meal_count < 0)
+			data->last_meal[i] = get_curent_time_in_msec();
+		else
+			data->last_meal[i] = 0;
+		pthread_create(threads + i, NULL, philosopher, data_args + i);
 		i++;
 	}
 	if (data->meal_count < 0)
 		check_someone_die__time_to_die(data);
 	else
 		check_someone_die__meal_count(data);
+
+	free(data->last_meal);
+	free(data->mutexs);
+	free(threads);
+	free(data);
+	free(data_args);
 	return 0;
 }

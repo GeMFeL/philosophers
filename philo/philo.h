@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/01 18:49:19 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/10 18:05:13 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 13:52:50 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,11 @@
 
 typedef	struct s_data
 {
+	int				num_of_philo;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int				num_of_philo;
 	int				meal_count;
-	time_t			date_of_birth;
 	time_t			*last_meal;
 	pthread_mutex_t	*mutexs;
 	void			*initial_value_of_data_args;
@@ -43,6 +42,6 @@ int		custom_atoi(char *str);
 time_t	get_curent_time_in_msec(void);
 void	exact_sleep_in_msec(int msec);
 t_data	**initialising_data(char *argv[]);
-void	*philosopher(t_data **data_args);
+void	*philosopher(void *data_args);
 
 #endif

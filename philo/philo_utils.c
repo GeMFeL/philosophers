@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:18:29 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/08 21:56:54 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/11 14:05:20 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ t_data	**initialising_data(char	*argv[])
 	i = 0;
 	while (i < data->num_of_philo)
 	{
-		data->last_meal[i] = 0;
 		pthread_mutex_init(data->mutexs + i, NULL);
 		data_args[i] = data;
 		i++;
