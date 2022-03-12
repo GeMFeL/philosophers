@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:18:29 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/10 17:24:42 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/12 12:39:29 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ time_t	get_curent_time_in_msec(void)
 
 	gettimeofday(&curent_time, NULL);
 	time = curent_time.tv_sec * 1000 + curent_time.tv_usec / 1000;
-	return (time + 1);
+	return (time);
 }
 
 void	exact_sleep_in_msec(int msec)
@@ -28,9 +28,7 @@ void	exact_sleep_in_msec(int msec)
 
 	start = get_curent_time_in_msec();
 	while (get_curent_time_in_msec() - start < msec)
-	{
-		usleep(250);
-	}
+		usleep(500);
 }
 
 static void	initialising_data_int_with_atoi(t_data *data, char *argv[])
@@ -64,8 +62,10 @@ t_data	*initialising_data(char	*argv[])
 	if (! data->pids)
 		perror_then_exit(MALLOC_ERROR);
 	sem_unlink(SEM_FORKS_NAME);
+	sem_unlink(SEM_PRINT_TURN_NAME);
 	data->forks = sem_open(SEM_FORKS_NAME, O_CREAT, 0666, data->num_of_philo);
-	if (data->forks == SEM_FAILED)
-		perror_then_exit(SEM_FORKS_NAME);
+	data->print_turn = sem_open(SEM_PRINT_TURN_NAME, O_CREAT, 0666, 1);
+	if (data->forks == SEM_FAILED || data->print_turn == SEM_FAILED)
+		perror_then_exit(SEM_ERROR);
 	return (data);
 }

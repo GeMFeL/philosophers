@@ -6,7 +6,7 @@
 /*   By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 11:18:29 by jchakir           #+#    #+#             */
-/*   Updated: 2022/03/11 14:05:20 by jchakir          ###   ########.fr       */
+/*   Updated: 2022/03/12 13:16:37 by jchakir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ time_t	get_curent_time_in_msec(void)
 
 	gettimeofday(&curent_time, NULL);
 	time = curent_time.tv_sec * 1000 + curent_time.tv_usec / 1000;
-	return (time + 1);
+	return (time);
 }
 
 void	exact_sleep_in_msec(int msec)
@@ -29,7 +29,7 @@ void	exact_sleep_in_msec(int msec)
 	start = get_curent_time_in_msec();
 	while (get_curent_time_in_msec() - start < msec)
 	{
-		usleep(250);
+		usleep(500);
 	}
 }
 
@@ -62,18 +62,21 @@ t_data	**initialising_data(char	*argv[])
 	if (! data)
 		perror_then_exit(MALLOC_ERROR);
 	initialising_data_int_with_atoi(data, argv);
-	data->mutexs = malloc(sizeof(pthread_mutex_t) * data->num_of_philo);
+	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_of_philo);
+	data->print_turn = malloc(sizeof(pthread_mutex_t));
 	data->last_meal = malloc(sizeof(time_t) * data->num_of_philo);
 	data_args = malloc(sizeof(t_data *) * data->num_of_philo);
-	if (! data->mutexs || ! data->last_meal || ! data_args)
+	if (!data->forks || !data->last_meal || !data_args || !data->print_turn)
 		perror_then_exit(MALLOC_ERROR);
 	data->initial_value_of_data_args = (void *)data_args;
 	i = 0;
 	while (i < data->num_of_philo)
 	{
-		pthread_mutex_init(data->mutexs + i, NULL);
-		data_args[i] = data;
-		i++;
+		if (pthread_mutex_init(data->forks + i, NULL))
+			perror_then_exit(MUTEX_ERROR);
+		data_args[i++] = data;
 	}
+	if (pthread_mutex_init(data->print_turn, NULL))
+		perror_then_exit(MUTEX_ERROR);
 	return (data_args);
 }

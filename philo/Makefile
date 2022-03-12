@@ -6,7 +6,7 @@
 #    By: jchakir <jchakir@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/01 18:50:40 by jchakir           #+#    #+#              #
-#    Updated: 2022/03/07 17:08:20 by jchakir          ###   ########.fr        #
+#    Updated: 2022/03/12 13:25:24 by jchakir          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,3 @@ fclean: clean
 	@rm -rf $(NAME) && echo "Programme ($(NAME)) deleted with success"
 
 re: fclean all
-
-
-
-er: all clean
